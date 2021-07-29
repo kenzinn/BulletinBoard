@@ -120,7 +120,7 @@ import UIKit
     fileprivate let rootItem: BLTNItem
     fileprivate var itemsStack: [BLTNItem]
     fileprivate var previousItem: BLTNItem?
-    fileprivate var presentingWindow: UIWindow?
+    public var presentingWindow: UIWindow?
 
     fileprivate var isPrepared: Bool = false
     fileprivate var isPreparing: Bool = false
