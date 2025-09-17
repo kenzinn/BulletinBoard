@@ -177,9 +177,8 @@ extension BLTNItemManager {
         bulletinController = BulletinViewController()
         bulletinController.manager = self
 
-        //bulletinController.modalPresentationStyle = .overFullScreen
+        bulletinController.modalPresentationStyle = .overFullScreen
         bulletinController.transitioningDelegate = bulletinController
-        bulletinController.modalPresentationStyle = .custom
         bulletinController.loadBackgroundView()
         bulletinController.setNeedsStatusBarAppearanceUpdate()
         bulletinController.setNeedsUpdateOfHomeIndicatorAutoHidden()
@@ -446,11 +445,6 @@ extension BLTNItemManager {
         assertIsPrepared()
         assertIsMainThread()
         bulletinController.loadView()
-
-        if let presenterScene = presentingVC.view.window?.windowScene,
-           let bulletinWindow = bulletinController.view.window {
-            bulletinWindow.windowScene = presenterScene
-        }
 
         let refreshActivityIndicator = shouldDisplayActivityIndicator && isDetached
 

@@ -1,9 +1,9 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.0
 import PackageDescription
 
 let package = Package(
     name: "BLTNBoard",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v11)],
     products: [
         .library(name: "BLTNBoard", targets: ["BLTNBoard"]),
     ],
