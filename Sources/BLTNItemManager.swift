@@ -21,6 +21,9 @@ import UIKit
 
 @objc public final class BLTNItemManager: NSObject {
 
+    let diagnosticTransitionDelegate = DiagnosticTransitionDelegate()
+
+
     /// Bulletin view controller.
     fileprivate var bulletinController: BulletinViewController!
 
@@ -170,6 +173,7 @@ extension BLTNItemManager {
      * This method must be called before any other interaction with the bulletin.
      */
 
+
     fileprivate func prepare() {
 
         assertIsMainThread()
@@ -177,12 +181,13 @@ extension BLTNItemManager {
         bulletinController = BulletinViewController()
         bulletinController.manager = self
 
-        bulletinController.modalPresentationStyle = .overFullScreen
-        bulletinController.transitioningDelegate = bulletinController
+        bulletinController.modalPresentationStyle = .custom
+        bulletinController.modalTransitionStyle = .coverVertical
+        bulletinController.transitioningDelegate = bulletinController // diagnosticTransitionDelegate //  bulletinController
         bulletinController.loadBackgroundView()
         bulletinController.setNeedsStatusBarAppearanceUpdate()
         bulletinController.setNeedsUpdateOfHomeIndicatorAutoHidden()
-        
+
         isPrepared = true
         isPreparing = true
         shouldDisplayActivityIndicator = rootItem.shouldStartWithActivityIndicator
@@ -446,6 +451,9 @@ extension BLTNItemManager {
         assertIsMainThread()
         bulletinController.loadView()
 
+        presentingVC.definesPresentationContext = true
+        presentingVC.providesPresentationContextTransitionStyle = true
+
         let refreshActivityIndicator = shouldDisplayActivityIndicator && isDetached
 
         if refreshActivityIndicator {
@@ -453,7 +461,15 @@ extension BLTNItemManager {
         }
 
         bulletinController.modalPresentationCapturesStatusBarAppearance = true
-        presentingVC.present(bulletinController, animated: animated, completion: completion)
+        presentingVC.setOverrideTraitCollection(UITraitCollection(horizontalSizeClass: .compact), forChild: presentingVC)
+        assert(bulletinController.transitioningDelegate != nil, "Transitioning delegate was lost!")
+        print("presentationStyle: \(bulletinController.modalPresentationStyle) ", bulletinController.modalPresentationStyle.rawValue)
+        if #available (iOS 26.0, *) {
+            presentingVC.present(bulletinController, animated: animated, completion: completion)
+        } else {
+            presentingVC.present(bulletinController, animated: animated, completion: completion)
+        }
+        presentingVC.setOverrideTraitCollection(nil, forChild: presentingVC)
 
     }
     
@@ -726,4 +742,46 @@ extension BLTNItemManager {
         precondition(isPrepared, "You must call the `prepare` function before interacting with the bulletin.")
     }
 
+}
+
+// MARK: - Diagnostics
+
+final class DiagnosticTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate, UIAdaptivePresentationControllerDelegate {
+
+    func presentationController(forPresented presented: UIViewController,
+                                presenting: UIViewController?,
+                                source: UIViewController) -> UIPresentationController? {
+        print("[Diagnostic] presentationController(forPresented:)")
+        let pc = UIPresentationController(presentedViewController: presented, presenting: presenting)
+        pc.delegate = self
+        return pc
+    }
+
+    func animationController(forPresented presented: UIViewController,
+                             presenting: UIViewController,
+                             source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        print("[Diagnostic] animationController(forPresented:)")
+        return nil // not returning animator on purpose
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        print("[Diagnostic] animationController(forDismissed:)")
+        return nil
+    }
+
+    func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        print("[Diagnostic] interactionControllerForPresentation(using:)")
+        return nil
+    }
+
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        print("[Diagnostic] interactionControllerForDismissal(using:)")
+        return nil
+    }
+
+    // MARK: UIAdaptivePresentationControllerDelegate
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        print("[Diagnostic] adaptivePresentationStyle(for:)")
+        return .none
+    }
 }
