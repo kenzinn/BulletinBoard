@@ -522,13 +522,6 @@ extension BulletinViewController: UIViewControllerTransitioningDelegate {
 
     }
 
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        print("presentationController(forPresented:) called")
-        let pController = UIPresentationController(presentedViewController: presented, presenting: presenting)
-        pController.delegate = self
-        return pController
-    }
-
     /// Creates a new view swipe interaction controller and wires it to the content view.
     func refreshSwipeInteractionController() {
 
@@ -546,12 +539,6 @@ extension BulletinViewController: UIViewControllerTransitioningDelegate {
         activeSnapshotView = snapshot
     }
 
-}
-
-extension BulletinViewController: UIAdaptivePresentationControllerDelegate {
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        .none
-    }
 }
 
 // MARK: - Keyboard
