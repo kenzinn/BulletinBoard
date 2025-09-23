@@ -177,7 +177,9 @@ extension BLTNItemManager {
         bulletinController = BulletinViewController()
         bulletinController.manager = self
 
-        bulletinController.modalPresentationStyle = .overFullScreen
+        if #available(iOS 13.0, *) {
+            bulletinController.modalPresentationStyle = .custom
+        }
         bulletinController.transitioningDelegate = bulletinController
         bulletinController.loadBackgroundView()
         bulletinController.setNeedsStatusBarAppearanceUpdate()

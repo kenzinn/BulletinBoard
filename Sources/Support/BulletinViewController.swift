@@ -503,6 +503,7 @@ extension BulletinViewController {
 extension BulletinViewController: UIViewControllerTransitioningDelegate {
 
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        print("animationController(forPresented:presenting:source:) was called")
         return BulletinPresentationAnimationController(style: manager?.backgroundViewStyle ?? .dimmed)
     }
 
